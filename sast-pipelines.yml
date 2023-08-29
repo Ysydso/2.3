@@ -14,10 +14,9 @@ steps:
 - checkout: self
   fetchDepth: 0
 
-- task: DotNetCoreCLI@2
+- task: MSBuild@1
   inputs:
-    command: 'build'
-
+    solution: '**/*.sln'
 
 - task: WhiteSource Bolt@20
   inputs:
