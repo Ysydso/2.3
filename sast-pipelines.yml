@@ -14,16 +14,9 @@ steps:
 - checkout: self
   fetchDepth: 0
 
-- task: NuGetCommand@2
+- task: DotNetCoreCLI@2
   inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    
-- task: MSBuild@1
-  inputs:
-    solution: '**/*.sln'
-    msbuildArchitecture: 'x64'
-    clean: true
+    command: 'build'
 
 - task: WhiteSource Bolt@20
   inputs:
