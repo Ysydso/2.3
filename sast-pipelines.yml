@@ -13,7 +13,21 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-
 - task: WhiteSource Bolt@20
   inputs:
-    cwd: '${System.DefaultWorkingDirectory}'
+    advance: true
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloud'
+    organization: 'jmservera-ado'
+    scannerMode: 'MSBuild'
+    projectKey: 'jmservera_WebGoat.Net'
+    projectName: 'WebGoat.Net'
+
+- task: SonarCloudAnalyze@1
+
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
