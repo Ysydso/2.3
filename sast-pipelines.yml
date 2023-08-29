@@ -14,11 +14,6 @@ steps:
 - checkout: self
   fetchDepth: 0
 
-- task: UseDotNet@2
-  inputs:
-   packageType: 'sdk'
-   version: '7.x'
-   includePreviewVersions: true
 - task: WhiteSource Bolt@20
   inputs:
     advance: true
