@@ -12,7 +12,9 @@ pool:
 steps:
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'restore'
+    command: 'build'
+
+
 - task: WhiteSource Bolt@20
   inputs:
     advance: true
