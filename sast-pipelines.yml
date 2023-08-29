@@ -10,6 +10,10 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+
+- checkout: self
+  fetchDepth: 0
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
@@ -23,12 +27,14 @@ steps:
   inputs:
     SonarCloud: 'sonarcloud'
     organization: 'jmservera-ado'
-    scannerMode: 'MSBuild'
     projectKey: 'jmservera_WebGoat.Net'
     projectName: 'WebGoat.Net'
+    extraProperties: |
+      sonar.exclusions=**/obj/**,**/*.dll,**/Migrations/*
+      sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)\**\*.trx
+      sonar.qualitygate.wait=true
 
 - task: SonarCloudAnalyze@1
-
 
 - task: SonarCloudPublish@1
   inputs:
