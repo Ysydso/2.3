@@ -15,3 +15,5 @@ steps:
     command: 'restore'
 
 - task: WhiteSource Bolt@20
+  inputs:
+    cwd: '${System.DefaultWorkingDirectory}'
