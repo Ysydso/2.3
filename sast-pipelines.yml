@@ -12,70 +12,78 @@ pool:
 variables:
   imageName: 'webgoat-docker'
 
-steps:
+stages:
+ - stage: SAST
+   jobs:
+    - job: SAST
+      steps:
 
-- checkout: self
-  fetchDepth: 0
+      - checkout: self
+        fetchDepth: 0
 
-- task: DotNetCoreCLI@2
-  displayName: DotNetCoreCLI Restore
-  inputs:
-    command: 'restore'
-- task: dependency-check-build-task@6
-  displayName: OWASP Dependency Check
-  inputs:
-    projectName: 'WebGoat'
-    scanPath: '.'
-    format: 'JUNIT'
+      - task: DotNetCoreCLI@2
+        displayName: DotNetCoreCLI Restore
+        inputs:
+          command: 'restore'
+      - task: dependency-check-build-task@6
+        displayName: OWASP Dependency Check
+        inputs:
+          projectName: 'WebGoat'
+          scanPath: '.'
+          format: 'JUNIT'
 
-- task: PublishTestResults@2
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-junit.xml'
-- task: WhiteSource Bolt@20
-  inputs:
-    advance: true
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-junit.xml'
+      - task: WhiteSource Bolt@20
+        inputs:
+          advance: true
 
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'sonarcloud'
-    organization: 'jmservera-ado'
-    projectKey: 'jmservera_WebGoat.Net'
-    projectName: 'WebGoat.Net'
-    scannerMode: 'MSBuild'
-    extraProperties: |
-      sonar.exclusions=**/obj/**,**/*.dll,**/Migrations/*
-      sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)\**\*.trx
-      sonar.qualitygate.wait=true
+      - task: SonarCloudPrepare@1
+        inputs:
+          SonarCloud: 'sonarcloud'
+          organization: 'jmservera-ado'
+          projectKey: 'jmservera_WebGoat.Net'
+          projectName: 'WebGoat.Net'
+          scannerMode: 'MSBuild'
+          extraProperties: |
+            sonar.exclusions=**/obj/**,**/*.dll,**/Migrations/*
+            sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)\**\*.trx
+            sonar.qualitygate.wait=true
 
 
-- task: DotNetCoreCLI@2
-  displayName: DotNetCoreCLI Build
-  inputs:
-    command: 'build'
+      - task: DotNetCoreCLI@2
+        displayName: DotNetCoreCLI Build
+        inputs:
+          command: 'build'
 
-- task: SonarCloudAnalyze@1
+      - task: SonarCloudAnalyze@1
 
-- task: SonarCloudPublish@1
-  inputs:
-    pollingTimeoutSec: '300'
+      - task: SonarCloudPublish@1
+        inputs:
+          pollingTimeoutSec: '300'
 
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '17.09.0-ce'
+      - task: DockerInstaller@0
+        inputs:
+          dockerVersion: '17.09.0-ce'
 
-- task: Docker@2
-  inputs:
-    repository: $(imageName)
-    command: 'build'
-    Dockerfile: '**/Dockerfile'
+      - task: Docker@2
+        inputs:
+          repository: $(imageName)
+          command: 'build'
+          Dockerfile: '**/Dockerfile'
 
-- task: Bash@3
-  displayName: Run WebGoat website
-  inputs:
-    targetType: 'inline'
-    script: |
-      # Write your commands here
-      
-      docker run -p 80:80 -d $(imageName)
-- task: owaspzap@1
+ - stage: DAST
+   jobs:
+    - job: DAST
+      steps:
+        - task: Bash@3
+          displayName: Run WebGoat website
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Write your commands here
+              
+              docker run -p 80:80 -d $(imageName)
+        - task: owaspzap@1
