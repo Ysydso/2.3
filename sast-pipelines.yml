@@ -69,7 +69,8 @@ stages:
    # see: https://learn.microsoft.com/en-us/azure/devops/pipelines/process/stages?view=azure-devops&tabs=yaml#specify-dependencies
    dependsOn: []
    jobs:
-    - job: build-and-run-image
+    - job: build_and_run_image
+      displayName: Build and run docker image
       steps:
         - task: DockerInstaller@0
           inputs:
@@ -84,7 +85,8 @@ stages:
             
         - bash: docker run -p 80:80 -d $(imageName):$(Build.BuildId)
           displayName: Run WebGoat website
-    - job: run-owaspzap
+    - job: run_owaspzap
+      displayName: Run OWASP Zap and publish results
       steps:
         - task: owaspzap@1
           inputs:
