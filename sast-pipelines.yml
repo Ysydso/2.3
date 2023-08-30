@@ -22,6 +22,11 @@ steps:
     projectName: 'WebGoat'
     scanPath: '.'
     format: 'JUNIT'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/dependency-check-junit.xml'
 - task: WhiteSource Bolt@20
   inputs:
     advance: true
