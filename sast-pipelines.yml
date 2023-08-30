@@ -17,7 +17,11 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-
+- task: dependency-check-build-task@6
+  inputs:
+    projectName: 'WebGoat'
+    scanPath: '.'
+    format: 'JUNIT'
 - task: WhiteSource Bolt@20
   inputs:
     advance: true
@@ -44,3 +48,6 @@ steps:
 - task: SonarCloudPublish@1
   inputs:
     pollingTimeoutSec: '300'
+
+- task: owaspzap@1
+  inputs:
