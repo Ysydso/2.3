@@ -15,31 +15,32 @@ variables:
 stages:
  - stage: SAST
    jobs:
-    - job: SAST
+    - job: Dependency_check
       steps:
-
-      - checkout: self
-        fetchDepth: 0
-
-      - task: DotNetCoreCLI@2
-        displayName: DotNetCoreCLI Restore
+      - task: WhiteSource Bolt@20
         inputs:
-          command: 'restore'
+          advance: true
       - task: dependency-check-build-task@6
         displayName: OWASP Dependency Check
+        condition: always()
         inputs:
           projectName: 'WebGoat'
           scanPath: '.'
           format: 'JUNIT'
-
       - task: PublishTestResults@2
+        condition: always()
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-junit.xml'
-      - task: WhiteSource Bolt@20
-        inputs:
-          advance: true
 
+    - job: SonarCloud_SAST
+      steps:
+      - checkout: self
+        fetchDepth: 0
+      - task: DotNetCoreCLI@2
+        displayName: DotNetCoreCLI Restore
+        inputs:
+          command: 'restore'
       - task: SonarCloudPrepare@1
         inputs:
           SonarCloud: 'sonarcloud'
@@ -51,7 +52,6 @@ stages:
             sonar.exclusions=**/obj/**,**/*.dll,**/Migrations/*
             sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)\**\*.trx
             sonar.qualitygate.wait=true
-
 
       - task: DotNetCoreCLI@2
         displayName: DotNetCoreCLI Build
@@ -85,10 +85,6 @@ stages:
             
         - bash: docker run -p 80:80 -d $(imageName):$(Build.BuildId)
           displayName: Run WebGoat website
-    - job: run_owaspzap
-      displayName: Run OWASP Zap and publish results
-      dependsOn: [build_and_run_image]
-      steps:
         - task: owaspzap@1
           inputs:
             aggressivemode: true
