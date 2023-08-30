@@ -9,15 +9,20 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  imageName: 'webgoat-docker'
+
 steps:
 
 - checkout: self
   fetchDepth: 0
 
 - task: DotNetCoreCLI@2
+  displayName: DotNetCoreCLI Restore
   inputs:
     command: 'restore'
 - task: dependency-check-build-task@6
+  displayName: OWASP Dependency Check
   inputs:
     projectName: 'WebGoat'
     scanPath: '.'
@@ -45,6 +50,7 @@ steps:
 
 
 - task: DotNetCoreCLI@2
+  displayName: DotNetCoreCLI Build
   inputs:
     command: 'build'
 
@@ -60,14 +66,16 @@ steps:
 
 - task: Docker@2
   inputs:
+    repository: $(imageName)
     command: 'build'
     Dockerfile: '**/Dockerfile'
 
 - task: Bash@3
+  displayName: Run WebGoat website
   inputs:
     targetType: 'inline'
     script: |
       # Write your commands here
       
-      docker run -p 80:80 -d WebGoat.Net
+      docker run -p 80:80 -d $(imageName)
 - task: owaspzap@1
