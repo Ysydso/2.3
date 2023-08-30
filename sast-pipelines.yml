@@ -173,7 +173,7 @@ stages:
             serviceConnectionEndpoint: 'snyk'
             testType: 'container'
             dockerImageName: '$(imageName):$(Build.BuildId)'
-            dockerfilePath: '**/Dockerfile'
+            dockerfilePath: './Dockerfile'
             monitorWhen: 'always'
             failOnIssues: true
             projectName: 'DevSecOps_Demo1'
