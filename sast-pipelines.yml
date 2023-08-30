@@ -87,6 +87,7 @@ stages:
           displayName: Run WebGoat website
     - job: run_owaspzap
       displayName: Run OWASP Zap and publish results
+      dependsOn: [build_and_run_image]
       steps:
         - task: owaspzap@1
           inputs:
