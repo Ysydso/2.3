@@ -78,12 +78,74 @@ stages:
             repository: $(imageName)
             command: 'build'
             Dockerfile: '**/Dockerfile'
-        - task: Bash@3
+            
+        - bash: docker run -p 80:80 -d $(imageName):$(Build.BuildId)
           displayName: Run WebGoat website
-          inputs:
-            targetType: 'inline'
-            script: |
-              # Write your commands here
               
-              docker run -p 80:80 -d $(imageName):$(Build.BuildId)
         - task: owaspzap@1
+
+        - bash: |
+            sudo npm install -g handlebars-cmd
+
+            cat <<EOF > owaspzap/nunit-template.hbs
+            {{#each site}}
+
+            <test-run
+                id="2"
+                name="Owasp test"
+                start-time="{{../[@generated]}}"  >
+                <test-suite
+                    id="{{@index}}"
+                    type="Assembly"
+                    name="{{[@name]}}"
+                    result="Failed"
+                    failed="{{alerts.length}}">
+                    <attachments>
+                        <attachment>
+                            <filePath>owaspzap/report.html</filePath>
+                        </attachment>
+                    </attachments>
+                {{#each alerts}}<test-case
+                    id="{{@index}}"
+                    name="{{alert}}"
+                    result="Failed"
+                    fullname="{{alert}}"
+                    time="1">
+                        <failure>
+                            <message>
+                                <![CDATA[{{{desc}}}]]>
+                            </message>
+                            <stack-trace>
+                                <![CDATA[
+            Solution:
+            {{{solution}}}
+
+            Reference:
+            {{{reference}}}
+
+            instances:{{#each instances}}
+            * {{uri}}
+                - {{method}}
+                {{#if evidence}}- {{{evidence}}}{{/if}}
+                                {{/each}}]]>
+                            </stack-trace>
+                        </failure>
+                </test-case>
+                {{/each}}
+                </test-suite>
+            </test-run>
+            {{/each}}
+            EOF
+            displayName: 'owasp nunit template'
+            condition: always()
+
+        - bash: ' handlebars owaspzap/report.json < owaspzap/nunit-template.hbs > owaspzap/test-results.xml'
+          displayName: 'generate nunit type file'
+          condition: always()
+
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results **/TEST-*.xml'
+          inputs:
+            testResultsFormat: NUnit
+            testResultsFiles: 'owaspzap/test-results.xml'
+          condition: always()
