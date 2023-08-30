@@ -17,6 +17,10 @@ stages:
    jobs:
     - job: Dependency_check
       steps:
+      - task: NuGetVulnerabilityScan@1
+        inputs:
+          path: .
+          transitive: true
       - task: WhiteSource Bolt@20
         inputs:
           advance: true
@@ -33,10 +37,7 @@ stages:
           testResultsFormat: 'JUnit'
           testResultsFiles: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-junit.xml'
       
-      - task: NuGetVulnerabilityScan@1
-        inputs:
-          path: .
-          transitive: true
+
 
     - job: SonarCloud_SAST
       steps:
