@@ -32,6 +32,11 @@ stages:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-junit.xml'
+      
+      - task: NuGetVulnerabilityScan@1
+        inputs:
+          path: '${Build.SourcesDirectory}'
+          transitive: true
 
     - job: SonarCloud_SAST
       steps:
