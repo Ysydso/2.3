@@ -168,6 +168,16 @@ stages:
             testResultsFiles: 'owaspzap/test-results.xml'
           condition: always()
 
+        - task: SnykSecurityScan@1
+          inputs:
+            serviceConnectionEndpoint: 'snyk'
+            testType: 'container'
+            dockerImageName: '$(imageName):$(Build.BuildId)'
+            dockerfilePath: '**/Dockerfile'
+            monitorWhen: 'always'
+            failOnIssues: true
+            projectName: 'DevSecOps_Demo1'
+            organization: 'jmservera'
  - stage: ShipIt
    dependsOn: [SAST,DAST]
    condition: succeeded()
