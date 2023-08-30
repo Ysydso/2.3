@@ -50,4 +50,3 @@ steps:
     pollingTimeoutSec: '300'
 
 - task: owaspzap@1
-  inputs:
