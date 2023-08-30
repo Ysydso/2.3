@@ -26,7 +26,7 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '**/dependency-check-junit.xml'
+    testResultsFiles: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-junit.xml'
 - task: WhiteSource Bolt@20
   inputs:
     advance: true
@@ -54,4 +54,20 @@ steps:
   inputs:
     pollingTimeoutSec: '300'
 
+- task: DockerInstaller@0
+  inputs:
+    dockerVersion: '17.09.0-ce'
+
+- task: Docker@2
+  inputs:
+    command: 'build'
+    Dockerfile: '**/Dockerfile'
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your commands here
+      
+      docker run -p 80:80 -d WebGoat.Net
 - task: owaspzap@1
