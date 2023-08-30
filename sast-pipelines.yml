@@ -64,20 +64,19 @@ stages:
         inputs:
           pollingTimeoutSec: '300'
 
-      - task: DockerInstaller@0
-        inputs:
-          dockerVersion: '17.09.0-ce'
-
-      - task: Docker@2
-        inputs:
-          repository: $(imageName)
-          command: 'build'
-          Dockerfile: '**/Dockerfile'
-
  - stage: DAST
    jobs:
     - job: DAST
       steps:
+        - task: DockerInstaller@0
+          inputs:
+            dockerVersion: '17.09.0-ce'
+
+        - task: Docker@2
+          inputs:
+            repository: $(imageName)
+            command: 'build'
+            Dockerfile: '**/Dockerfile'
         - task: Bash@3
           displayName: Run WebGoat website
           inputs:
@@ -85,5 +84,5 @@ stages:
             script: |
               # Write your commands here
               
-              docker run -p 80:80 -d $(imageName)
+              docker run -p 80:80 -d $(imageName):$(Build.BuildId)
         - task: owaspzap@1
