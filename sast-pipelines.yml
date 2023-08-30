@@ -84,6 +84,8 @@ stages:
           displayName: Run WebGoat website
               
         - task: owaspzap@1
+          inputs:
+            aggressivemode: true
 
         - bash: |
             sudo npm install -g handlebars-cmd
