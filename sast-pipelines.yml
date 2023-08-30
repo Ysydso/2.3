@@ -74,6 +74,7 @@ stages:
             dockerVersion: '17.09.0-ce'
 
         - task: Docker@2
+          displayName: build dockerfile
           inputs:
             repository: $(imageName)
             command: 'build'
@@ -136,8 +137,8 @@ stages:
             </test-run>
             {{/each}}
             EOF
-            displayName: 'owasp nunit template'
-            condition: always()
+          displayName: 'owasp nunit template'
+          condition: always()
 
         - bash: ' handlebars owaspzap/report.json < owaspzap/nunit-template.hbs > owaspzap/test-results.xml'
           displayName: 'generate nunit type file'
@@ -149,3 +150,4 @@ stages:
             testResultsFormat: NUnit
             testResultsFiles: 'owaspzap/test-results.xml'
           condition: always()
+
