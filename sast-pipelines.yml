@@ -157,6 +157,11 @@ stages:
    dependsOn: [SAST,DAST]
    condition: succeeded()
    jobs:
-     - job: publish_to_Azure
+     - job: deploy_to_Azure
+       displayName: Deploy to Azure
        steps:
-         - bash: echo "Publishing..."
+         - bash: echo "Publishing to Azure..."
+     - job: deploy_to_OnPrem
+       displayName: Deploy to On Premises
+       steps:
+         - bash: echo "It works on my computer™" 
