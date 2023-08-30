@@ -65,9 +65,11 @@ stages:
           pollingTimeoutSec: '300'
 
  - stage: DAST
+   # this removes the implicit dependency with the previous stage
+   # see: https://learn.microsoft.com/en-us/azure/devops/pipelines/process/stages?view=azure-devops&tabs=yaml#specify-dependencies
    dependsOn: []
    jobs:
-    - job: DAST
+    - job: build-and-run-image
       steps:
         - task: DockerInstaller@0
           inputs:
@@ -82,7 +84,8 @@ stages:
             
         - bash: docker run -p 80:80 -d $(imageName):$(Build.BuildId)
           displayName: Run WebGoat website
-              
+    - job: run-owaspzap
+      steps:
         - task: owaspzap@1
           inputs:
             aggressivemode: true
