@@ -65,6 +65,7 @@ stages:
           pollingTimeoutSec: '300'
 
  - stage: DAST
+   dependsOn: []
    jobs:
     - job: DAST
       steps:
