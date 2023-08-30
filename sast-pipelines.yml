@@ -153,3 +153,10 @@ stages:
             testResultsFiles: 'owaspzap/test-results.xml'
           condition: always()
 
+ - stage: ShipIt
+   dependsOn: [SAST,DAST]
+   condition: succeeded()
+   jobs:
+     - job: publish_to_Azure
+       steps:
+         - bash: echo "Publishing..."
