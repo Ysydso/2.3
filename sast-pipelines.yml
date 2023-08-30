@@ -17,6 +17,10 @@ stages:
    jobs:
     - job: Dependency_check
       steps:
+      - task: DotNetCoreCLI@2
+        displayName: DotNetCoreCLI Restore
+        inputs:
+          command: 'restore'
       - task: NuGetVulnerabilityScan@1
         inputs:
           path: .
