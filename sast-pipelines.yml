@@ -17,14 +17,6 @@ stages:
    jobs:
     - job: Dependency_check
       steps:
-      - task: DotNetCoreCLI@2
-        displayName: DotNetCoreCLI Restore
-        inputs:
-          command: 'restore'
-      - task: NuGetVulnerabilityScan@1
-        inputs:
-          path: .
-          transitive: true
       - task: WhiteSource Bolt@20
         inputs:
           advance: true
@@ -40,8 +32,14 @@ stages:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-junit.xml'
-      
-
+      - task: DotNetCoreCLI@2
+        displayName: DotNetCoreCLI Restore
+        inputs:
+          command: 'restore'
+      - task: NuGetVulnerabilityScan@1
+        inputs:
+          path: .
+          transitive: true
 
     - job: SonarCloud_SAST
       steps:
