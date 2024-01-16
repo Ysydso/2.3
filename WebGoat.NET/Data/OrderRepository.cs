@@ -52,11 +52,52 @@ namespace WebGoatCore.Data
                 using var dataReader = command.ExecuteReader();
                 dataReader.Read();
                 order.OrderId = Convert.ToInt32(dataReader[0]);
-                }
+            }
 
-                sql = ";\nINSERT INTO OrderDetails (" +
-                    "OrderId, ProductId, UnitPrice, Quantity, Discount" +
-                    ") VALUES ";
+            sql = ";\nINSERT INTO OrderDetails (" +
+                "OrderId, ProductId, UnitPrice, Quantity, Discount" +
+                ") VALUES ";
+
+            // Use parameterized queries instead of constructing SQL queries directly from user-controlled data
+            var parameters = new List<DbParameter>();
+            var values = new List<string>();
+
+            foreach (var (orderDetails, i) in order.OrderDetails.WithIndex())
+            {
+                orderDetails.OrderId = order.OrderId;
+                values.Add($"(@OrderId{i}, @ProductId{i}, @UnitPrice{i}, @Quantity{i}, @Discount{i})");
+
+                parameters.Add(command.CreateParameter());
+                parameters[^1].ParameterName = $"@OrderId{i}";
+                parameters[^1].Value = orderDetails.OrderId;
+
+                parameters.Add(command.CreateParameter());
+                parameters[^1].ParameterName = $"@ProductId{i}";
+                parameters[^1].Value = orderDetails.ProductId;
+
+                parameters.Add(command.CreateParameter());
+                parameters[^1].ParameterName = $"@UnitPrice{i}";
+                parameters[^1].Value = orderDetails.UnitPrice;
+
+                parameters.Add(command.CreateParameter());
+                parameters[^1].ParameterName = $"@Quantity{i}";
+                parameters[^1].Value = orderDetails.Quantity;
+
+                parameters.Add(command.CreateParameter());
+                parameters[^1].ParameterName = $"@Discount{i}";
+                parameters[^1].Value = orderDetails.Discount;
+            }
+
+            sql += string.Join(",", values);
+
+            command.CommandText = sql;
+
+            foreach (var parameter in parameters)
+            {
+                command.Parameters.Add(parameter);
+            }
+
+            command.ExecuteNonQuery();
 
                 // Use parameterized queries instead of constructing SQL queries directly from user-controlled data
                 var parameters = new List<DbParameter>();
