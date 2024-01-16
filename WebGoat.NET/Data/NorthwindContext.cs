@@ -29,13 +29,15 @@ namespace WebGoatCore.Data
         // Add the following code to configure the logger factory
         public static readonly ILoggerFactory _myLoggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.AddConsole();
-            builder.AddDebug();
-        });
+            lock (_myLoggerFactory)
+            {
+                builder.AddConsole();
+                builder.AddDebug();
+            }
 
-        public static readonly LoggerFactory _myLoggerFactory = 
-            new LoggerFactory(new[] {
+            public static readonly LoggerFactory _myLoggerFactory = new LoggerFactory(new[] {
                 new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
+            });
         });
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.

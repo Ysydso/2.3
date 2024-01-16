@@ -129,32 +129,6 @@ namespace WebGoatCore.Models
                 }
             }
 
-            // minimal valid number length = 13
-            if (string.IsNullOrEmpty(creditCardNumber) || creditCardNumber.Length < 13)
-            {
-                return false;
-            }
-
-            var number = creditCardNumber.ToCharArray();
-
-            // Validate based on card type, first if tests length, second tests prefix
-            // Use Luhn Algorithm to validate
-            int sum = 0;
-            for (int i = number.Length - 1; i >= 0; i--)
-            {
-                if (i % 2 == number.Length % 2)
-                {
-                    int n = (number[i] - '0') * 2;
-                    sum += (n / 10) + (n % 10);
-                }
-                else
-                {
-                    sum += (number[i] - '0');
-                }
-            }
-            return (sum % 10 == 0);
-        }
-
         public string ChargeCard(decimal amount)
         {
             //Here is where we'd actually charge the card if this were real.

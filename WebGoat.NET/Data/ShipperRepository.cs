@@ -45,7 +45,11 @@ namespace WebGoatCore.Data
         {
             using System;
 
-                        var random = new Random();
+                        using System.Security.Cryptography;
+
+                        // ...
+
+                        var random = RandomNumberGenerator.GetInt32(0, 1000);
             var companyName = shipper.CompanyName;
             if (companyName.Contains("UPS"))
             {
