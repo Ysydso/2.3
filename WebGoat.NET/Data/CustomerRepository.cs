@@ -59,14 +59,19 @@ namespace WebGoatCore.Data
         /// <returns>An unused CustomerId.</returns>
         private string GenerateCustomerId(string companyName)
         {
-            var random = new Random();
-            var customerId = companyName.Replace(" ", "");
-            customerId = (customerId.Length >= 5) ? customerId.Substring(0, 5) : customerId;
-            while (CustomerIdExists(customerId))
+            using (var rng = new RNGCryptoServiceProvider())
             {
-                customerId = customerId.Substring(0, 4) + "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[random.Next(35)];
+                var customerId = companyName.Replace(" ", "");
+                customerId = (customerId.Length >= 5) ? customerId.Substring(0, 5) : customerId;
+                var randomBytes = new byte[1];
+                while (CustomerIdExists(customerId))
+                {
+                    rng.GetBytes(randomBytes);
+                    var randomIndex = randomBytes[0] % 36; // 36 characters in the string "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    customerId = customerId.Substring(0, 4) + "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[randomIndex];
+                }
+                return customerId;
             }
-            return customerId;
         }
     }
 }

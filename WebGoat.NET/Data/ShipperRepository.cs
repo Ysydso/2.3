@@ -43,7 +43,9 @@ namespace WebGoatCore.Data
         /// </remarks>
         public string GetNextTrackingNumber(Shipper shipper)
         {
-            var random = new Random();
+            using System;
+
+                        var random = new Random();
             var companyName = shipper.CompanyName;
             if (companyName.Contains("UPS"))
             {

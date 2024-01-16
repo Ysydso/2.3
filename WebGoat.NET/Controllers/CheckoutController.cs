@@ -216,7 +216,17 @@ namespace WebGoatCore.Controllers
 
         public IActionResult GoToExternalTracker(string carrier, string trackingNumber)
         {
-            return Redirect(Order.GetPackageTrackingUrl(carrier, trackingNumber));
+            // Validate carrier and tracking number
+            if (!IsValidCarrier(carrier) || !IsValidTrackingNumber(trackingNumber))
+            {
+                return BadRequest("Invalid carrier or tracking number.");
+            }
+
+            // Generate the external tracker URL
+            string externalTrackerUrl = GenerateExternalTrackerUrl(carrier, trackingNumber);
+
+            // Open the external tracker URL in a new tab
+            return Content($"<script>window.open('{externalTrackerUrl}', '_blank');</script>");
         }
 
         private Customer? GetCustomerOrAddError()

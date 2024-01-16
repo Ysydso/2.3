@@ -110,6 +110,24 @@ namespace WebGoatCore.Models
 
             // Remove non-digits
             var creditCardNumber = Regex.Replace(Number, @"[^\d]", "");
+            using System.Threading.Tasks;
+
+            public async Task<string> ChargeCardWithTimeout(decimal amount, TimeSpan timeout)
+            {
+                var chargeTask = Task.Run(() => ChargeCard(amount));
+                var timeoutTask = Task.Delay(timeout);
+
+                var completedTask = await Task.WhenAny(chargeTask, timeoutTask);
+
+                if (completedTask == chargeTask)
+                {
+                    return await chargeTask;
+                }
+                else
+                {
+                    throw new TimeoutException("The operation timed out.");
+                }
+            }
 
             // minimal valid number length = 13
             if (string.IsNullOrEmpty(creditCardNumber) || creditCardNumber.Length < 13)
@@ -140,8 +158,13 @@ namespace WebGoatCore.Models
         public string ChargeCard(decimal amount)
         {
             //Here is where we'd actually charge the card if this were real.
-            var code = new Random().Next(999999).ToString("000000");
-            return code;
+            byte[] randomNumber = new byte[4];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(randomNumber);
+            }
+            var code = BitConverter.ToUInt32(randomNumber, 0) % 1000000;
+            return code.ToString("000000");
         }
         #endregion
 

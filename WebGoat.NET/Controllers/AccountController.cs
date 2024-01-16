@@ -45,14 +45,7 @@ namespace WebGoatCore.Controllers
 
             if (result.Succeeded)
             {
-                if (model.ReturnUrl != null)
-                {
-                    return Redirect(model.ReturnUrl);
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                return RedirectToAction("Index", "Home");
             }
 
             if (result.IsLockedOut)

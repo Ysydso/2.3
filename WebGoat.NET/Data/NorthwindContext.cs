@@ -26,7 +26,14 @@ namespace WebGoatCore.Data
 
         public static string? ConnString;
 
-        public static readonly LoggerFactory _myLoggerFactory =
+        // Add the following code to configure the logger factory
+        public static readonly ILoggerFactory _myLoggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDebug();
+        });
+
+        public static readonly LoggerFactory _myLoggerFactory = 
             new LoggerFactory(new[] {
                 new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
         });

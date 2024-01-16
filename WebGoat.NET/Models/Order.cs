@@ -41,23 +41,22 @@ namespace WebGoatCore.Models
                 case "fedex":
                 case "federalexpress":
                 case "federal express":
-                    trackingUrl = string.Format("http://www.fedex.com/Tracking?tracknumbers={0}&action=track", TrackingNumber);
+                    trackingUrl = string.Format("https://www.fedex.com/Tracking?tracknumbers={0}&action=track", TrackingNumber);
                     break;
                 case "ups":
                 case "unitedpostalservice":
                 case "united postal service":
-                    //trackingUrl = string.Format("http://wwwapps.ups.com/WebTracking/processInputRequest?InquiryNumber1={0}&tracknums_displayed=1&TypeOfInquiryNumber=T", TrackingNumber);
-                    trackingUrl = string.Format("http://wwwapps.ups.com/WebTracking/track?loc=en_US&track.x=Track&trackNums={0}", TrackingNumber);
+                    trackingUrl = string.Format("https://wwwapps.ups.com/WebTracking/track?loc=en_US&track.x=Track&trackNums={0}", TrackingNumber);
                     break;
                 case "usps":
                 case "unitedstatespostalservice":
                 case "united states postal service":
                 case "postoffice":
                 case "post office":
-                    trackingUrl = string.Format("http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?origTrackNum={0}", TrackingNumber);
+                    trackingUrl = string.Format("https://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?origTrackNum={0}", TrackingNumber);
                     break;
                 default:
-                    trackingUrl = string.Format("http://{0}?TrackingNumber={1}", Carrier, TrackingNumber);
+                    trackingUrl = string.Format("https://{0}?TrackingNumber={1}", Carrier, TrackingNumber);
                     break;
             }
             return trackingUrl;
